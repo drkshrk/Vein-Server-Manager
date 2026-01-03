@@ -364,7 +364,8 @@ def _build_mgmt_tab(app, parent):
     tk.Checkbutton(r1, text="Passive Mode", variable=app.auto_update_passive).pack(side='left', padx=10)
     r2 = tk.Frame(up_frame); r2.pack(fill='x', pady=2)
     tk.Label(r2, text="Steam Branch:").pack(side='left')
-    app.steamcmd_branch_combobox = ttk.Combobox(r2, width=20, values=logic.steam_get_beta_branches())
+    #TODO: 
+    app.steamcmd_branch_combobox = ttk.Combobox(r2, textvariable=app.steam_branch_var, width=20, values=logic.steam_get_beta_branches(), )
     app.steamcmd_branch_combobox.pack(side='left', padx=5)
     app.updater_status_label = tk.Label(r2, text="Status: Idle", fg="grey"); app.updater_status_label.pack(side='right', padx=10)
     
