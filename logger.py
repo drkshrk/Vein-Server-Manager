@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-# MANAGER_VERSION = "v5.1.4 (Integrity & Polish)"
+# MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
 
 # logger.py
 import os

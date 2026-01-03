@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-# MANAGER_VERSION = "v5.1.4 (Integrity & Polish)"
+# MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
 
 # gui.py
 import tkinter as tk
@@ -43,10 +43,10 @@ def create_main_layout(app):
     app.pid_label = tk.Label(info_bar, text="PID: -", bg="#e0e0e0")
     app.pid_label.pack(side="left", padx=10)
     
-    # --- NEW FEATURE (v5.1.4): Player Count Label ---
+    # --- FEATURE: Player Count Label ---
     app.player_count_label = tk.Label(info_bar, text="Players: 0/0", bg="#e0e0e0", fg="#0056b3")
     app.player_count_label.pack(side="left", padx=10)
-    # ------------------------------------------------
+    # -----------------------------------
     
     app.version_label = tk.Label(info_bar, text=f"Build: {app.current_build_id}", bg="#e0e0e0")
     app.version_label.pack(side="left", padx=10)
@@ -362,9 +362,14 @@ def _build_mgmt_tab(app, parent):
     r1 = tk.Frame(up_frame); r1.pack(fill='x', pady=2)
     tk.Checkbutton(r1, text="Enable Auto-Updater", variable=app.auto_update_enabled).pack(side='left')
     tk.Checkbutton(r1, text="Passive Mode", variable=app.auto_update_passive).pack(side='left', padx=10)
+    
+    # --- FEATURE (v5.1.5): Branch Dropdown (Replaces old text entry) ---
     r2 = tk.Frame(up_frame); r2.pack(fill='x', pady=2)
     tk.Label(r2, text="Steam Branch:").pack(side='left')
-    tk.Entry(r2, textvariable=app.steam_branch_var, width=15).pack(side='left', padx=5)
+    app.branch_combo = ttk.Combobox(r2, textvariable=app.steam_branch_var, values=["public", "experimental"], state="readonly", width=15)
+    app.branch_combo.pack(side='left', padx=5)
+    # ------------------------------------------------------------------
+    
     app.updater_status_label = tk.Label(r2, text="Status: Idle", fg="grey"); app.updater_status_label.pack(side='right', padx=10)
     
     bf = tk.Frame(parent); bf.pack(fill='x', padx=10, pady=5)
