@@ -1,6 +1,6 @@
 # Vein Server Manager
-Need help - [Join the Support Discord](https://pages.github.com/)
-
+Need help - [Join the Support Discord](https://pages.github.com/)  
+Published / Distributed at [Nexus Mods](https://www.nexusmods.com/vein/mods/101?tab=description)
  
 ## 🚀 INTRODUCTION
 Stop messing with batch files. Stop manually editing confusing INI text files.  The Vein Server Manager is a standalone tool designed to make hosting, configuring, and protecting your Vein server effortless. Whether you are a complete beginner or a veteran host, this tool handles the heavy lifting so you can focus on surviving.  
