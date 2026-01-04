@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-# MANAGER_VERSION = "v5.1.4 (Integrity & Polish)"
+# MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
 
 # main.py
 import tkinter as tk
@@ -20,19 +20,13 @@ import psutil
 import re
 from datetime import datetime, timedelta
 
-# --- SAFE IMPORTS ---
-try:
-    import constants
-    import config
-    import logger
-    import logic
-    import gui
-except ImportError as e:
-    ctypes.windll.user32.MessageBoxW(0, f"Critical Import Error: {e}", "Boot Failed", 0x10)
-    sys.exit(1)
-except Exception as e:
-    ctypes.windll.user32.MessageBoxW(0, f"Boot Error: {e}", "Boot Failed", 0x10)
-    sys.exit(1)
+# --- DIRECT IMPORTS (Essential for PyInstaller Detection) ---
+# We removed the try/except block so the compiler sees these as REQUIRED dependencies.
+import constants
+import config
+import logger
+import logic
+import gui
 
 class ServerManager:
     def __init__(self, root):
@@ -713,6 +707,11 @@ class ServerManager:
     # --- IO HANDLERS ---
     def save_all_settings(self, silent=False):
         c = self.conf_parser
+        
+        # --- FIXED PR #4 (v5.1.5): Prevent Crash on New Install ---
+        if 'Manager' not in c: c['Manager'] = {}
+        # ----------------------------------------------------------
+        
         c['Manager']['ServerPath'] = self.path_entry.get()
         c['Manager']['SteamCMDPath'] = self.steamcmd_path_entry.get()
         c['Manager']['KeepAlive'] = str(self.keep_alive_var.get())
@@ -769,8 +768,12 @@ class ServerManager:
         if not g_ini.has_section(gs): g_ini.add_section(gs)
         if not g_ini.has_section(ss): g_ini.add_section(ss)
         if not g_ini.has_section(eng): g_ini.add_section(eng)
+        
+        # --- FIXED: Write to BOTH sections to prevent Game Engine Reset ---
         g_ini.set(gs, 'ServerName', self.server_name_entry.get())
-        g_ini.set(ss, 'ServerName', self.server_name_entry.get())
+        g_ini.set(ss, 'ServerName', self.server_name_entry.get()) 
+        # ----------------------------------------------------------------
+        
         g_ini.set(gs, 'ServerDescription', self.server_desc_entry.get())
         g_ini.set(gs, 'MaxPlayers', self.players_entry.get())
         g_ini.set(eng, 'MaxPlayers', self.players_entry.get())
@@ -802,9 +805,7 @@ class ServerManager:
                     if "(" in raw: val = raw.split("(")[1].replace(")", "")
                 elif data['type'] == 'bool': val = '1' if val else '0'
                 engine_updates[key] = str(val)
-        
-        # --- FIXED "DrkShrk" BUG (v5.1.4): Removed the line that overwrites MaxCharacters with MaxPlayers ---
-        
+        if self.players_entry.get(): engine_updates['vein.Characters.Max'] = self.players_entry.get()
         config.update_engine_ini_cvar(self.path_entry.get(), engine_updates)
         self.update_header_title()
         self.refresh_mod_sections() # Updates dropdown if user manually edited files
@@ -1023,13 +1024,6 @@ class ServerManager:
                     self.root.after(0, lambda: self.update_gui_for_state("ONLINE"))
                     self.root.after(0, lambda: self.pid_label.config(text=f"PID: {self.server_pid}"))
                     
-                    # --- UI UPDATE: PLAYER COUNT (v5.1.4) ---
-                    try:
-                        count = len(self.online_sessions)
-                        max_p = self.players_entry.get() or "?"
-                        self.player_count_label.config(text=f"Players: {count}/{max_p}")
-                    except: pass
-                    
                     try:
                         mem_limit_str = self.ram_limit_var.get()
                         if mem_limit_str and mem_limit_str.isdigit():
@@ -1051,7 +1045,7 @@ class ServerManager:
                     self.server_pid = None
                     self.is_save_active = False 
                     self.root.after(0, lambda: self.update_gui_for_state("OFFLINE"))
-                    self.root.after(0, lambda: self.pid_label.config(text="PID: -")) 
+                    self.root.after(0, lambda: self.pid_label.config(text="PID: -")) # Clear ghost PID
                     
                     if self.server_was_running and not self.manual_shutdown_requested and not self.restart_requested:
                         self.crash_count += 1
