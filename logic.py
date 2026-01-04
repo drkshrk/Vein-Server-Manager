@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-# MANAGER_VERSION = "v5.1.4 (Integrity & Polish)"
+# MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
 
 # logic.py
 import os
@@ -19,12 +19,16 @@ import socket
 import hashlib
 import asyncio
 from datetime import datetime
+
+# --- DIRECT IMPORTS ---
 import constants
 import config
 import logger 
 from steam.client import SteamClient
 
 # --- DISCORD LIBRARY SAFE IMPORT ---
+# We keep this try/except because 'discord' is an external library (pip install discord.py)
+# that might not be present in the dev environment, but is packed in the EXE.
 try:
     import discord
     from discord.ext import tasks
