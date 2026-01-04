@@ -1,8 +1,10 @@
-# Vein-Server-Manager
+# Vein Server Manager
 Need help - [Join the Support Discord](https://pages.github.com/)
+
  
 ## 🚀 INTRODUCTION
 Stop messing with batch files. Stop manually editing confusing INI text files.  The Vein Server Manager is a standalone tool designed to make hosting, configuring, and protecting your Vein server effortless. Whether you are a complete beginner or a veteran host, this tool handles the heavy lifting so you can focus on surviving.  
+
 
 ## 📥 INSTALLATION
 1. Download VeinServerManager.exe from the "Files" tab.
@@ -11,6 +13,7 @@ Stop messing with batch files. Stop manually editing confusing INI text files.  
 4. Run the Manager.
 5. Follow the Wizard to install the server files.
 6. (Optional) Go to the "Integrations" tab to set up your Discord Bot Token for the Live Status Board.
+
 
 ## 🤖 Discord Remote Control (New in v4.8)
 - Manage your server without logging into the host PC!
@@ -22,6 +25,7 @@ Stop messing with batch files. Stop manually editing confusing INI text files.  
 - `!restart` : Graceful reboot (warns players -> saves -> restarts).
 - `!backup` :Create a zip backup instantly.
 - (Note: The bot runs inside the Manager app. The Manager must be open for commands to work.)
+
 
 ## ⚡ KEY FEATURES
 - Auto-Install Wizard
@@ -59,23 +63,6 @@ Stop messing with batch files. Stop manually editing confusing INI text files.  
 - Active Filtering: Instantly filter the log history with a search bar to find exactly what you need.
 
 
-## Changelog:
-### 🟢 LATEST VERSION: v5.1.6 (The Config Separation Update)Released: January 4, 2026
-- This is a CRITICAL LOGIC PATCH. It resolves the issue where changing your Server Slots would accidentally reset your Character Save limits.
-
-### 🔧 Critical Fixes (v5.1.6):
-- Fixed Config Overwrite: Permanently decoupled "Max Players" (Server Slots) from "Max Characters" (Save Slots). You can now change your player count without breaking the per-player character limit.
-- Fixed Server Name Reset: Restored the specific configuration logic required by the Vein game engine. The Manager now writes the Server Name to both legacy and current sections to prevent the game from resetting it to "Vein Server" on reboot.
-
-### ✨ Included Features & Stability (from v5.1.5):
-- Fixed "New User" Crash: Resolved an issue causing crashes on first-time saves.
-- Fixed "Missing Module" Error: Rebuilt with an updated engine to solve startup errors on some systems.
-- Branch Selector: Added a dropdown menu to safely switch between public and experimental branches.
-- Player Counter: Added real-time "Players: X/Y" display to the dashboard header.
-
-### 🩸 NEW IN v5.0+: THE CONNECTIVITY & MODDING UPDATE  
-- We have transformed the Manager from a simple launcher into a connected command center.
-
 ## 🗺️ THE ROADMAP (Road to v5.2.0)The next major update will focus on automation, integrity, and user experience.
 1. SteamCMD Auto-Repair (The Watchdog 2.0)
     - If an update hangs or corrupts, the Manager will automatically kill the process and trigger a validation command to repair the server without human intervention.
@@ -88,6 +75,7 @@ Stop messing with batch files. Stop manually editing confusing INI text files.  
     - Whitelist Support: Implementation of a soft-whitelist to restrict server access to specific SteamIDs.
 4. Visual Analytics
     - Simple graphs to monitor CPU and RAM usage over time, helping admins detect memory leaks before they cause a crash.
+
 
 ## ⚠️ CURRENT LIMITATIONS
 - NO RCON SUPPORT YET
