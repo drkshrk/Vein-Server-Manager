@@ -87,3 +87,7 @@ Stop messing with batch files. Stop manually editing confusing INI text files.  
 > The Game - 🕹️ https://store.steampowered.com/app/1857950/VEIN/  
 > Dedicated server info - 🖥️ https://steamdb.info/app/2131400  
 > Linux Manager - https://github.com/warmbo/vein-server  
+
+
+## DISCLAIMER:  
+Vein Server Manager is an unofficial, open-source tool and is not affiliated with or endorsed by the developers of VEIN. This software is provided "as is" without warranty of any kind. Use at your own risk. The developer is not responsible for any data loss, server corruption, or configuration errors. Always maintain independent backups of your server files.
