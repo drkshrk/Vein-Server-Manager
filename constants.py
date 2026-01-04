@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
+MANAGER_VERSION = "v5.1.6 (Config Separation Fix)"
 AUTHOR_NAME = "Wolverinex77"
 
 # constants.py
@@ -115,7 +115,9 @@ FAQ_TEXT = {
 GAMEPLAY_DEFINITIONS = {
     "General & Loot": [
         ("Loot Scarcity", "vein.Scarcity.Difficulty", "Loot Rarity. Standard=2.0.", "combo_scarcity", "Engine", "ConsoleVariables", "2.0"),
+        # --- FIX: Ensure this targets Engine.ini, NOT Game.ini ---
         ("Max Characters", "vein.Characters.Max", "Chars per SteamID. (Default: 1)", "str", "Engine", "ConsoleVariables", "1"),
+        # ---------------------------------------------------------
         ("Containers Respawn", "vein.ContainersRespawn.Enabled", "Chests refill over time?", "bool", "Engine", "ConsoleVariables", True),
         ("World Items Respawn", "vein.ItemActorSpawner.Respawns", "Items on shelves respawn?", "bool", "Engine", "ConsoleVariables", True),
         ("Furniture Respawns", "vein.Furniture.Respawns", "Destroyed doors/tables return?", "bool", "Engine", "ConsoleVariables", False),
