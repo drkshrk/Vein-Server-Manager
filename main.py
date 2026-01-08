@@ -1,5 +1,5 @@
 # --- VERSION & IDENTITY ---
-# MANAGER_VERSION = "v5.1.5 (Community Fixes & Test)"
+# MANAGER_VERSION = "v5.1.6 (Config Separation Fix)"
 
 # main.py
 import tkinter as tk
@@ -28,88 +28,103 @@ import logger
 import logic
 import gui
 
+# --- DEBUG TRAP SETUP ---
+# This ensures we catch errors even if the GUI hasn't started yet.
+try:
+    # Force PyInstaller to look in the temp folder
+    if getattr(sys, 'frozen', False):
+        sys.path.append(sys._MEIPASS)
+except Exception:
+    pass
+
 class ServerManager:
     def __init__(self, root):
-        logger.debug("Initializing ServerManager UI...")
-        self.root = root
-        self.root.title(constants.APP_TITLE)
-        if os.path.exists(constants.ICON_FILE):
-            try: 
-                self.root.iconbitmap(constants.ICON_FILE)
-            except: 
-                pass
+        try:
+            logger.debug("Initializing ServerManager UI...")
+            self.root = root
+            self.root.title(constants.APP_TITLE)
+            if os.path.exists(constants.ICON_FILE):
+                try: 
+                    self.root.iconbitmap(constants.ICON_FILE)
+                except: 
+                    pass
 
-        # VARIABLES
-        self.server_pid = None
-        self.manual_shutdown_requested = False
-        self.restart_requested = False
-        self.server_was_running = False
-        self.is_backing_up = False
-        self.is_save_active = False 
-        self.crash_count = 0
-        self.current_build_id = "Unknown"
-        self.manager_update_available = False
-        self.log_reader_active = False
-        self.scheduler_last_warning_min = -1
-        self.player_history = {}
-        self.cached_public_ip = None
-        self.online_sessions = {}
-        
-        self.vcmd = (self.root.register(self.validate_number_input), '%P')
-        self.command_queue = queue.Queue()
+            # VARIABLES
+            self.server_pid = None
+            self.manual_shutdown_requested = False
+            self.restart_requested = False
+            self.server_was_running = False
+            self.is_backing_up = False
+            self.is_save_active = False 
+            self.crash_count = 0
+            self.current_build_id = "Unknown"
+            self.manager_update_available = False
+            self.log_reader_active = False
+            self.scheduler_last_warning_min = -1
+            self.player_history = {}
+            self.cached_public_ip = None
+            self.online_sessions = {}
+            
+            self.vcmd = (self.root.register(self.validate_number_input), '%P')
+            self.command_queue = queue.Queue()
 
-        # CONFIG VARS
-        self.keep_alive_var = tk.BooleanVar(value=False)
-        self.rcon_enabled_var = tk.BooleanVar(value=False)
-        self.http_api_enabled_var = tk.BooleanVar(value=False)
-        self.sched_daily_enabled = tk.BooleanVar(value=False)
-        self.sched_days_vars = [tk.BooleanVar(value=True) for _ in range(7)]
-        self.sched_interval_enabled = tk.BooleanVar(value=False)
-        self.reactive_backup_enabled = tk.BooleanVar(value=True)
-        self.backup_on_stop = tk.BooleanVar(value=False)
-        self.auto_update_enabled = tk.BooleanVar(value=False)
-        self.auto_update_passive = tk.BooleanVar(value=True)
-        self.steam_branch_var = tk.StringVar(value="public")
-        self.discord_enabled = tk.BooleanVar(value=False)
-        self.discord_webhook_url = tk.StringVar()
-        self.community_url = tk.StringVar(value=constants.LINK_DISCORD_MAIN)
-        self.player_filter_var = tk.StringVar(value="Online Now")
-        self.admin_ids_var = tk.StringVar()
-        self.profile_var = tk.StringVar()
-        self.theme_var = tk.StringVar(value="Standard (Blue)")
-        self.theme_codes = { "Standard (Blue)": "#3498db", "PvP (Orange)": "#e67e22", "Hardcore (Purple)": "#9b59b6", "Eco (Green)": "#2ecc71", "Test (Grey)": "#95a5a6" }
-        
-        self.auto_start_server_var = tk.BooleanVar(value=False)
-        self.boot_delay_var = tk.StringVar(value="30")
-        self.discord_bot_token = tk.StringVar()
-        self.discord_channel_id = tk.StringVar()
-        self.ram_limit_var = tk.StringVar(value="0")
-        self.auto_update_on_start_var = tk.BooleanVar(value=False)
-        self.sched_warning_var = tk.StringVar(value="30, 10, 5, 1")
+            # CONFIG VARS
+            self.keep_alive_var = tk.BooleanVar(value=False)
+            self.rcon_enabled_var = tk.BooleanVar(value=False)
+            self.http_api_enabled_var = tk.BooleanVar(value=False)
+            self.sched_daily_enabled = tk.BooleanVar(value=False)
+            self.sched_days_vars = [tk.BooleanVar(value=True) for _ in range(7)]
+            self.sched_interval_enabled = tk.BooleanVar(value=False)
+            self.reactive_backup_enabled = tk.BooleanVar(value=True)
+            self.backup_on_stop = tk.BooleanVar(value=False)
+            self.auto_update_enabled = tk.BooleanVar(value=False)
+            self.auto_update_passive = tk.BooleanVar(value=True)
+            self.steam_branch_var = tk.StringVar(value="public")
+            self.discord_enabled = tk.BooleanVar(value=False)
+            self.discord_webhook_url = tk.StringVar()
+            self.community_url = tk.StringVar(value=constants.LINK_DISCORD_MAIN)
+            self.player_filter_var = tk.StringVar(value="Online Now")
+            self.admin_ids_var = tk.StringVar()
+            self.profile_var = tk.StringVar()
+            self.theme_var = tk.StringVar(value="Standard (Blue)")
+            self.theme_codes = { "Standard (Blue)": "#3498db", "PvP (Orange)": "#e67e22", "Hardcore (Purple)": "#9b59b6", "Eco (Green)": "#2ecc71", "Test (Grey)": "#95a5a6" }
+            
+            self.auto_start_server_var = tk.BooleanVar(value=False)
+            self.boot_delay_var = tk.StringVar(value="30")
+            self.discord_bot_token = tk.StringVar()
+            self.discord_channel_id = tk.StringVar()
+            self.ram_limit_var = tk.StringVar(value="0")
+            self.auto_update_on_start_var = tk.BooleanVar(value=False)
+            self.sched_warning_var = tk.StringVar(value="30, 10, 5, 1")
 
-        self.gameplay_vars = {} 
-        self.menu_buttons = {}
-        self.gameplay_frames = {}
-        self.selected_mod_filename = None
+            self.gameplay_vars = {} 
+            self.menu_buttons = {}
+            self.gameplay_frames = {}
+            self.selected_mod_filename = None
 
-        self.check_environment()
-        
-        # BOOT
-        logger.debug("Loading Player History...")
-        self.player_history = self.load_player_history()
-        self.conf_parser = config.get_manager_config()
-        geo = self.conf_parser.get('Manager', 'WindowGeometry', fallback='')
-        if geo:
-            try: self.root.geometry(geo)
-            except: self.root.geometry("1100x750")
-        else:
-            self.root.geometry("1100x750")
+            self.check_environment()
+            
+            # BOOT
+            logger.debug("Loading Player History...")
+            self.player_history = self.load_player_history()
+            self.conf_parser = config.get_manager_config()
+            geo = self.conf_parser.get('Manager', 'WindowGeometry', fallback='')
+            if geo:
+                try: self.root.geometry(geo)
+                except: self.root.geometry("1100x750")
+            else:
+                self.root.geometry("1100x750")
 
-        server_path = self.conf_parser.get('Manager', 'ServerPath', fallback='')
-        if not server_path or not os.path.exists(server_path):
-            self.launch_dashboard()
-        else:
-            self.launch_dashboard()
+            server_path = self.conf_parser.get('Manager', 'ServerPath', fallback='')
+            if not server_path or not os.path.exists(server_path):
+                self.launch_dashboard()
+            else:
+                self.launch_dashboard()
+        except Exception as e:
+            # Trap errors during __init__ as well
+            logger.log_crash(traceback.format_exc(), "INIT_FAIL")
+            ctypes.windll.user32.MessageBoxW(0, f"Initialization Error:\n{e}", "Boot Failed", 0x10)
+            sys.exit(1)
 
     def check_environment(self):
         self.env_type = "LIVE" 
@@ -343,7 +358,7 @@ class ServerManager:
         self.online_sessions.clear() 
         self.root.after(0, self.refresh_player_list_ui)
         
-        # --- VISUAL POLISH (v5.1.4): Show Orange RESTARTING status ---
+        # --- VISUAL POLISH: Show Orange RESTARTING status ---
         if self.restart_requested:
              self.root.after(0, lambda: self.update_gui_for_state("RESTARTING"))
         else:
@@ -805,7 +820,10 @@ class ServerManager:
                     if "(" in raw: val = raw.split("(")[1].replace(")", "")
                 elif data['type'] == 'bool': val = '1' if val else '0'
                 engine_updates[key] = str(val)
-        if self.players_entry.get(): engine_updates['vein.Characters.Max'] = self.players_entry.get()
+        
+        # --- FIXED "DrkShrk" BUG (v5.1.6): LINE REMOVED ---
+        # "Max Players" from Main Tab NO LONGER writes to "Max Characters" (Save Slot)
+        
         config.update_engine_ini_cvar(self.path_entry.get(), engine_updates)
         self.update_header_title()
         self.refresh_mod_sections() # Updates dropdown if user manually edited files
@@ -876,7 +894,16 @@ class ServerManager:
         g_ini = config.load_game_ini(self.path_entry.get())
         gs = config.get_existing_section_name(g_ini, '/Script/Vein.VeinGameSession')
         ss = config.get_existing_section_name(g_ini, '/Script/Vein.ServerSettings')
-        self.server_name_entry.delete(0, tk.END); self.server_name_entry.insert(0, g_ini.get(ss, 'ServerName', fallback='Vein Server'))
+        
+        # --- FIXED READ LOGIC: Prioritize Correct Section ---
+        # 1. Try Correct Section
+        sn = g_ini.get(gs, 'ServerName', fallback=None)
+        # 2. If missing, try Legacy Section
+        if not sn: sn = g_ini.get(ss, 'ServerName', fallback='Vein Server')
+        
+        self.server_name_entry.delete(0, tk.END); self.server_name_entry.insert(0, sn)
+        # -------------------------------------------------------------
+        
         self.server_desc_entry.delete(0, tk.END); self.server_desc_entry.insert(0, g_ini.get(gs, 'ServerDescription', fallback=''))
         self.server_password_entry.delete(0, tk.END); self.server_password_entry.insert(0, g_ini.get(gs, 'Password', fallback=''))
         self.http_api_port_entry.delete(0, tk.END); self.http_api_port_entry.insert(0, g_ini.get(gs, 'HTTPPort', fallback='8080'))
@@ -1045,7 +1072,7 @@ class ServerManager:
                     self.server_pid = None
                     self.is_save_active = False 
                     self.root.after(0, lambda: self.update_gui_for_state("OFFLINE"))
-                    self.root.after(0, lambda: self.pid_label.config(text="PID: -")) # Clear ghost PID
+                    self.root.after(0, lambda: self.pid_label.config(text="PID: -")) 
                     
                     if self.server_was_running and not self.manual_shutdown_requested and not self.restart_requested:
                         self.crash_count += 1
